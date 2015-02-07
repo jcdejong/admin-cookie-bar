@@ -31,7 +31,7 @@ function set_admin_cookie_bar_cookie($user_login, $user) {
     global $post;
 
     // set a cookie when a user is logged in
-        setcookie("AdminCookieBar", $user->ID, time()+3600);  /* expire in 1 hour */
+    setcookie("AdminCookieBar", $user->ID, time() + YEAR_IN_SECONDS, SITECOOKIEPATH);
 }
 add_action('wp_login', 'set_admin_cookie_bar_cookie', 10, 2);
 
