@@ -52,16 +52,13 @@ function add_admin_cookie_bar_body_classes( $classes ) {
 add_filter( 'body_class', 'add_admin_cookie_bar_body_classes' );
 
 // set a cookie that we can read later
-function set_admin_cookie_bar_cookie() {
+function set_admin_cookie_bar_cookie($user_login, $user) {
     global $post;
 
     // set a cookie when a user is logged in
-    // @todo, do we really want to check if a user can edit here? mayb always set the cookie when the user logs in ;)
-    if ( current_user_can( get_post_type_object($post->post_type)->cap->edit_post, $post->ID ) ) {
-        setcookie("AdminCookieBar", get_current_user_id(), time()+3600);  /* expire in 1 hour */
-    }
+        setcookie("AdminCookieBar", $user->ID, time()+3600);  /* expire in 1 hour */
 }
-add_action('wp', 'set_admin_cookie_bar_cookie');
+add_action('wp_login', 'set_admin_cookie_bar_cookie', 10, 2);
 
 // remove cookie when user logs out
 function del_admin_cookie_bar_cookie() {
@@ -73,7 +70,7 @@ add_action('wp_logout', 'del_admin_cookie_bar_cookie');
 function add_admin_cookie_bar_meta_tag() {
     global $wp_query;
 
-    $admin_url = 'http://wordpress.project.allict.nl/wp-admin/post.php?post=' . $wp_query->post->ID . '&amp;action=edit';
+    $admin_url = esc_url(home_url('/')) . 'wp-admin/post.php?post=' . $wp_query->post->ID . '&amp;action=edit';
 
     echo '<script type="text/javascript">jQuery( document ).ready(function() { adminCookieBar("' . $admin_url . '"); });</script>' . PHP_EOL;
 }
