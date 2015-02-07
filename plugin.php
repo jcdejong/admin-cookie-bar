@@ -14,21 +14,7 @@ Author URI: http://www.allict.nl
 // disable the normal admin bar
 add_filter('show_admin_bar', '__return_false');
 
-// re-enable the adin-bar styles
-function add_admin_cookie_bar_css() {
-    echo '<style type="text/css" media="print">#wpadminbar { display:none; }</style>';
-    echo '<style type="text/css" media="screen">'
-    	.'html { margin-top: 32px !important; }'
-        .'* html body { margin-top: 32px !important; }'
-        .'@media screen and ( max-width: 782px ) {'
-    	.'    html { margin-top: 46px !important; }'
-        .'    * html body { margin-top: 46px !important; }'
-        .'}'
-        .'</style>';
-}
-add_action('wp_head', 'add_admin_cookie_bar_css', 1000);
-
-// re-enable the admin-bar css and javascript and add our own to it as well
+// add the javascript to display the admin bar
 function add_admin_cookie_bar_scripts() {
 	wp_enqueue_script(
 	    'admin-cookie-bar',
@@ -37,19 +23,8 @@ function add_admin_cookie_bar_scripts() {
 	    '0.1',
 	    true
     );
-
-	wp_enqueue_script( 'admin-bar' );
-	wp_enqueue_style( 'admin-bar' );
 }
 add_action( 'wp_enqueue_scripts', 'add_admin_cookie_bar_scripts' );
-
-// re-enable the admin-bar classes
-function add_admin_cookie_bar_body_classes( $classes ) {
-	$classes[] = 'admin-bar';
-	$classes[] = 'no-customize-support';
-	return $classes;
-}
-add_filter( 'body_class', 'add_admin_cookie_bar_body_classes' );
 
 // set a cookie that we can read later
 function set_admin_cookie_bar_cookie($user_login, $user) {
@@ -70,7 +45,7 @@ add_action('wp_logout', 'del_admin_cookie_bar_cookie');
 function add_admin_cookie_bar_meta_tag() {
     global $wp_query;
 
-    $admin_url = esc_url(home_url('/')) . 'wp-admin/post.php?post=' . $wp_query->post->ID . '&amp;action=edit';
+    $admin_url = base64_encode(esc_url(home_url('/')) . 'wp-admin/post.php?post=' . $wp_query->post->ID . '&amp;action=edit');
 
     echo '<script type="text/javascript">jQuery( document ).ready(function() { adminCookieBar("' . $admin_url . '"); });</script>' . PHP_EOL;
 }
